@@ -35,7 +35,7 @@ def one_by_one_matrix_test():
 def two_by_two_matrix_test():
     """test the two by two upper trianglar matrix 
     test generation of all cholesky roots of 2x2
-    """
+"""
     # general matrix
     upper_triangular_general_matrix_2x2 = np.array([[und, und],
                                                     [0,   und]], dtype="int16")
@@ -43,15 +43,26 @@ def two_by_two_matrix_test():
     # list that spans all possibilities from general matrix
     upper_triangular_list_2x2 = main.find_matrix_list_from_gen(GF, upper_triangular_general_matrix_2x2)
 
+    for i, list in enumerate(upper_triangular_list_2x2):
+        main.pretty_print_numpy_array(list, "list #" + str(i))
+
     cholesky_list = main.generate_cholesky_roots_matrices(GF, upper_triangular_list_2x2)
 
 
-    test_list = [np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]]),
-                np.array([[0, 0, 0], [0, 0, 1], [0, 0, 1]]),
-                np.array([[0, 0, 1], [0, 0, 0], [0, 0, 1]]),
-                np.array([[0, 0, 1], [0, 0, 1], [0, 0, 0]]),
-                np.array([[0, 1, 0], [0, 1, 0], [0, 0, 0]]),
-                np.array([[0, 1, 1], [0, 1, 1], [0, 0, 0]])]
+    test_list = [np.array([[0, 0], [0, 0]]),
+                np.array([[0, 1], [0, 1]])]
+
+    print("cholesky_list")
+    print(cholesky_list)
+    print("test list")
+    print(test_list)
+
+    assert len(cholesky_list) == len(test_list)
+
+    for root in cholesky_list:
+        assert test_list.count(root) == 1
+        test_list.remove(root)
+
 
 def three_by_three_matrix_test():
     """test the three by three upper triangular matrix 
@@ -103,7 +114,7 @@ def three_by_three_matrix_test():
 
 def run_all_tests():
     #one_by_one_matrix_test()
-    #two_by_two_matrix_test()
-    three_by_three_matrix_test()
+    two_by_two_matrix_test()
+    #three_by_three_matrix_test()
 
 run_all_tests()

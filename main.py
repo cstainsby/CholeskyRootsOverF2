@@ -29,21 +29,26 @@ def main():
 
 
 def generate_cholesky_roots_matrices(GF, matrix_list):
+    """
+    DESC:
+    Based on a list of all upper triangular matrices, find all cholesky root matrices and add them to a list
+    PARAMS
+    GF 
+    """
     cholesky_root_list = []     # if M.transpose * M == zero matrix, add to chol. list
 
     print("Finding choleskys")
     print(matrix_list)
     for M in matrix_list:
-        print(M)
-        print(type(M))
-        print(np.transpose(M))
-        print()
-        print(np.matmul(M, np.transpose(M)))
-        print(type(np.matmul(M, np.transpose(M))))
+        print("printing mod ------------------")
+        print(mod_to_finite_field(GF, M.dot(np.transpose(M))))
+        
         if np.array_equal(
             mod_to_finite_field(GF, M.dot(np.transpose(M))),
             np.zeros(M.shape, dtype="int16")
             ):
+            print("is equal")
+            print(M)
             # the matrix will be classified as a Chol. matrix
             cholesky_root_list.append(M)
 
@@ -148,16 +153,55 @@ def mod_to_finite_field(GF, matrix):
         this function will be called after every operation to make sure 
         the output stays within the defined GF
         """
-        print(matrix)
-        print(matrix.shape)
+        rows, cols = matrix.shape
         result = np.zeros(matrix.shape, dtype="int16")
-        for i in range(0, 1):
-            for j in range(0, len(result[0])):
+        for i in range(rows):
+            for j in range(cols):
                 result[i][j] = matrix[i][j] % GF
-        return result 
+
+        return result
 
 def rule():
     pass
+
+def pretty_print_numpy_array(np_array, array_label = ""):
+    rows, cols = np_array.shape
+
+    if array_label != "":
+        print("-----" + array_label + "-----")
+    else:
+        print("-----------")
+    
+    print("Rows: " + str(rows))
+    print("Cols: " + str(cols))
+
+    print("  ", end="")
+    for i in range(cols):
+        print("|" + str(i) + " ", end="")
+    print()
+
+    for n in range((3 * cols) + 2):
+        print("-", end="")
+    print()
+
+    for i, row in enumerate(np_array):
+        print(str(i) + " ", end="")
+        for j, value in enumerate(row):
+            print("|" + str(value) + " ", end="")
+
+        print("")
+        for n in range((3 * cols) + 2):
+            print("-", end="")
+        print()
+
+    if array_label != "":
+        print("-----" + ('-' * len(array_label))  + "-----")
+    else:
+        print("-----------")
+    print()
+
+
+
 
 if __name__ == "__main__":
     main()
