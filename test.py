@@ -44,7 +44,7 @@ def two_by_two_matrix_test():
     upper_triangular_list_2x2 = main.find_matrix_list_from_gen(GF, upper_triangular_general_matrix_2x2)
 
     for i, list in enumerate(upper_triangular_list_2x2):
-        main.pretty_print_numpy_array(list, "list #" + str(i))
+        main.pretty_print_numpy_array(list, "list #" + str(i + 1), with_index_labels= False, with_shape=False)
 
     cholesky_list = main.generate_cholesky_roots_matrices(GF, upper_triangular_list_2x2)
 
@@ -52,16 +52,22 @@ def two_by_two_matrix_test():
     test_list = [np.array([[0, 0], [0, 0]]),
                 np.array([[0, 1], [0, 1]])]
 
-    print("cholesky_list")
-    print(cholesky_list)
+
     print("test list")
-    print(test_list)
+    for i, list in enumerate(test_list):
+        main.pretty_print_numpy_array(list, "list #" + str(i + 1), with_index_labels= False, with_shape=False)
 
     assert len(cholesky_list) == len(test_list)
 
+    # test shape of each array in chol list
+    for i, array in enumerate(cholesky_list):
+        rows, cols = array.shape
+        assert rows == 2
+        assert cols == 2
+
     for root in cholesky_list:
-        assert test_list.count(root) == 1
-        test_list.remove(root)
+        assert any(np.array_equal(test, root) for test in test_list)
+        
 
 
 def three_by_three_matrix_test():

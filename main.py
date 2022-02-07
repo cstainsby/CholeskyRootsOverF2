@@ -37,24 +37,17 @@ def generate_cholesky_roots_matrices(GF, matrix_list):
     """
     cholesky_root_list = []     # if M.transpose * M == zero matrix, add to chol. list
 
-    print("Finding choleskys")
-    print(matrix_list)
-    for M in matrix_list:
-        print("printing mod ------------------")
-        print(mod_to_finite_field(GF, M.dot(np.transpose(M))))
-        
+    for i, M in enumerate(matrix_list):
         if np.array_equal(
-            mod_to_finite_field(GF, M.dot(np.transpose(M))),
+            mod_to_finite_field(GF, np.transpose(M).dot(M)),
             np.zeros(M.shape, dtype="int16")
             ):
-            print("is equal")
-            print(M)
             # the matrix will be classified as a Chol. matrix
             cholesky_root_list.append(M)
 
-    print("Chol matrices: " + str(len(cholesky_root_list)))
-    for M in cholesky_root_list:
-        print(M, end="\n\n")
+    print("choleskys")
+    for i, list in enumerate(cholesky_root_list):
+        pretty_print_numpy_array(list, "chol #" + str(i + 1))
 
     return cholesky_root_list
 
@@ -101,8 +94,6 @@ def find_matrix_list_from_gen(GF, gen_matrix):
     for i in range(0, len(result_list)):
         result_list[i] = np.reshape(result_list[i], gen_matrix.shape)
 
-    print("Result list: ")
-    print(result_list)
     return result_list
 
 def recurr_create_matrix_permutations(flat_matrix, GF, index):
@@ -164,40 +155,53 @@ def mod_to_finite_field(GF, matrix):
 def rule():
     pass
 
-def pretty_print_numpy_array(np_array, array_label = ""):
+def pretty_print_numpy_array(np_array, array_label = "", with_index_labels = True, with_shape = True):
+    """
+    DESC:                                                                           \n
+    creates a detailed print of a numpy array including its shape and a given title \n
+    PARAMS:
+    np_array(np.array):         the array that will be pretty printed               \n
+    array_label(string):        the label to be displayed with the array            \n
+    with_index_labels(boolean): choose whether you want your axis labeled           \n
+    with_shape(boolean):        choose whether you want the shape displayed         \n
+    """
     rows, cols = np_array.shape
 
     if array_label != "":
-        print("-----" + array_label + "-----")
+        print("<----" + array_label + "---->")
     else:
-        print("-----------")
+        print("<--------->")
     
-    print("Rows: " + str(rows))
-    print("Cols: " + str(cols))
+    if with_shape:
+        print("Rows: " + str(rows))
+        print("Cols: " + str(cols))
 
-    print("  ", end="")
-    for i in range(cols):
-        print("|" + str(i) + " ", end="")
-    print()
+    if with_index_labels:
+        print("  ", end="")
+        for i in range(cols):
+            print("|" + str(i) + " ", end="")
+        print()
 
-    for n in range((3 * cols) + 2):
+    for n in range((3 * cols) + 3):
         print("-", end="")
     print()
 
     for i, row in enumerate(np_array):
-        print(str(i) + " ", end="")
+        if with_index_labels:
+            print(str(i) + " ", end="")
+
         for j, value in enumerate(row):
             print("|" + str(value) + " ", end="")
 
         print("")
-        for n in range((3 * cols) + 2):
+        for n in range((3 * cols) + 3):
             print("-", end="")
         print()
 
     if array_label != "":
-        print("-----" + ('-' * len(array_label))  + "-----")
+        print("<----" + ('-' * len(array_label))  + "---->")
     else:
-        print("-----------")
+        print("<--------->")
     print()
 
 
