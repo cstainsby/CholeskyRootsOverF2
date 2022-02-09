@@ -1,31 +1,18 @@
 import numpy as np
 
-def main():
-    """
-    DESC:
-    Find rule between Cholesky Roots and Square Roots in a GF(2) field
-    that will pair n x n Cholesky Roots into n x n Square Roots for all n >= 1
-    """
-    und = -1
+und = -1
 
-    # set GF here
-    GF = 2
+# set GF here
+GF = 2
 
-    # upper_triangular_general_matrix_3x3 = np.array([[und, und, und],
-    #                                                 [0,   und, und],
-    #                                                 [0,   0,   und]])
+def generate_upper_triangular_matrix_of_nxn(n):
+    upper_tri_matrix = np.zeros((n, n), dtype="int16")
 
-    # # list that spans all possibilities from general matrix
-    # upper_triangular_list_3x3 = find_matrix_list_from_gen(GF, upper_triangular_general_matrix_3x3)
-
-    # general matrix
-    upper_triangular_general_matrix_1x1 = np.array([und], dtype="int16")
-
-    # list that spans all possibilities from general matrix
-    upper_triangular_list_1x1 = find_matrix_list_from_gen(GF, upper_triangular_general_matrix_1x1)
-
-    square_root_list = generate_square_root_matrices(GF, upper_triangular_list_1x1)
-    cholesky_list = generate_cholesky_roots_matrices(GF, upper_triangular_list_1x1)
+    for i in range(n):
+        for j in range(n):
+            if i <= j:
+                upper_tri_matrix[i][j] = und
+    return upper_tri_matrix
 
 
 def generate_cholesky_roots_matrices(GF, matrix_list):
@@ -45,36 +32,19 @@ def generate_cholesky_roots_matrices(GF, matrix_list):
             # the matrix will be classified as a Chol. matrix
             cholesky_root_list.append(M)
 
-    print("choleskys")
-    for i, list in enumerate(cholesky_root_list):
-        pretty_print_numpy_array(list, "chol #" + str(i + 1))
-
     return cholesky_root_list
 
 
 def generate_square_root_matrices(GF, matrix_list):
     square_root_list = []       # if M * M == zero matrix, add to sq. root list 
 
-    print("Finding squares")
-    print(matrix_list)
-
     for M in matrix_list:
-        print(M)
-        print(type(M))
-        print(np.transpose(M))
-        print()
-        print(np.matmul(M, np.transpose(M)))
-        print(type(np.matmul(M, np.transpose(M))))
         if np.array_equal(
                 mod_to_finite_field(GF, np.matmul(M, M)),
                 np.zeros(M.shape, dtype="int16")
                 ):
                 # the matrix will be classified as a sqrt matrix
                 square_root_list.append(M)
-
-    print("Sqrt matrices: " + str(len(square_root_list)))
-    for M in square_root_list:
-        print(M, end="\n\n")
 
     return square_root_list
 
