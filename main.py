@@ -1,11 +1,25 @@
 import numpy as np
 
+# placeholder for an undetermined value
 und = -1
 
 # set GF here
 GF = 2
 
+def main():
+    """
+    DESC:
+    driver for program
+    """
+
+
 def generate_upper_triangular_matrix_of_nxn(n):
+    """
+    DESC:
+    create an upper triangular matrix with the upper triangle values as undetermined(-1)
+    PARAMS
+    n(int): specifies the length of the square matrix being generated
+    """
     upper_tri_matrix = np.zeros((n, n), dtype="int16")
 
     for i in range(n):
@@ -18,11 +32,13 @@ def generate_upper_triangular_matrix_of_nxn(n):
 def generate_cholesky_roots_matrices(GF, matrix_list):
     """
     DESC:
-    Based on a list of all upper triangular matrices, find all cholesky root matrices and add them to a list
+    given a list of matrices, find the cholesky roots
+    A matrix is a cholesky root if a matrix M's (M.transpose * M) == zero matrix
     PARAMS
-    GF 
+    GF(int)
+    matrix_list(list of np matrices)
     """
-    cholesky_root_list = []     # if M.transpose * M == zero matrix, add to chol. list
+    cholesky_root_list = []
 
     for i, M in enumerate(matrix_list):
         if np.array_equal(
@@ -36,7 +52,15 @@ def generate_cholesky_roots_matrices(GF, matrix_list):
 
 
 def generate_square_root_matrices(GF, matrix_list):
-    square_root_list = []       # if M * M == zero matrix, add to sq. root list 
+    """
+    DESC:
+    given a list of matrices, find the square roots
+    A matrix is a square root if a matrix M's (M * M) == zero matrix 
+    PARAMS
+    GF(int)
+    matrix_list(list of np matrices)
+    """
+    square_root_list = []       
 
     for M in matrix_list:
         if np.array_equal(
@@ -173,8 +197,6 @@ def pretty_print_numpy_array(np_array, array_label = "", with_index_labels = Tru
     else:
         print("<--------->")
     print()
-
-
 
 
 if __name__ == "__main__":
