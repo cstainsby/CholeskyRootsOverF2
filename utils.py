@@ -10,6 +10,7 @@ def generate_upper_triangular_matrix_of_nxn(n):
     PARAMS                                                                                \n
     n(int): specifies the length of the square matrix being generated                     \n
     """
+    und  = -1
     upper_tri_matrix = np.zeros((n, n), dtype="int16")
 
     for i in range(n):
@@ -31,7 +32,7 @@ def contains_np_matrix(search_matrix, matrix_list):
 
 def pretty_print_list_of_matrices(list_of_matrices):
     for i, list in enumerate(list_of_matrices):
-        simpleCholSqrtGenerator.pretty_print_numpy_array(list, "list #" + str(i + 1), with_index_labels= False, with_shape=False)
+        pretty_print_numpy_array(list, "list #" + str(i + 1), with_index_labels= False, with_shape=False)
 
 
 def is_sqrt_matrix(GF, M):
@@ -91,7 +92,10 @@ def pretty_print_numpy_array(np_array, array_label = "", with_index_labels = Tru
             print(str(i) + " ", end="")
 
         for j, value in enumerate(row):
-            print("|" + str(value) + " ", end="")
+            if value == -1:
+                print("|und", end="")
+            else:
+                print("|" + str(value) + " ", end="")
 
         print("")
         for n in range((3 * cols) + 3):
