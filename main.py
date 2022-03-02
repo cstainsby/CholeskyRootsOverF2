@@ -23,5 +23,7 @@ def main():
 
             if remaining_args > 2:
                 # then we have flags that have been entered
+                pass
             else:
                 # then we only have GF and n to read in
+                pass
