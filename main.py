@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 
 # placeholder for an undetermined value
 und = -1
@@ -11,14 +12,29 @@ def main():
     DESC:
     driver for program
     """
+    dim =3 
+
+    general_upper_matrix = generate_upper_triangular_matrix_of_nxn(dim)
+    upper_triangular_list = find_matrix_list_from_gen(GF, general_upper_matrix)
+    sqrt_list_at_n = generate_square_root_matrices(GF, upper_triangular_list)
+    chol_list_at_n = generate_cholesky_roots_matrices(GF, upper_triangular_list)
+
+    print("sqrt list")
+    for matrix in sqrt_list_at_n:
+        pretty_print_numpy_array(matrix, with_index_labels=False, with_shape=False)
+
+    print("\nchol list")
+    for matrix in chol_list_at_n:
+        pretty_print_numpy_array(matrix, with_index_labels=False, with_shape=False)
+
 
 
 def generate_upper_triangular_matrix_of_nxn(n):
     """
-    DESC:
-    create an upper triangular matrix with the upper triangle values as undetermined(-1)
-    PARAMS
-    n(int): specifies the length of the square matrix being generated
+    DESC:                                                                                 \n
+    create an upper triangular matrix with the upper triangle values as undetermined(-1)  \n
+    PARAMS                                                                                \n
+    n(int): specifies the length of the square matrix being generated                     \n
     """
     upper_tri_matrix = np.zeros((n, n), dtype="int16")
 
@@ -31,12 +47,12 @@ def generate_upper_triangular_matrix_of_nxn(n):
 
 def generate_cholesky_roots_matrices(GF, matrix_list):
     """
-    DESC:
-    given a list of matrices, find the cholesky roots
-    A matrix is a cholesky root if a matrix M's (M.transpose * M) == zero matrix
-    PARAMS
-    GF(int)
-    matrix_list(list of np matrices)
+    DESC:                                                                                 \n
+    given a list of matrices, find the cholesky roots                                     \n
+    A matrix is a cholesky root if a matrix M's (M.transpose * M) == zero matrix          \n
+    PARAMS                                                                                \n
+    GF(int)                                                                               \n
+    matrix_list(list of np matrices)                                                      \n
     """
     cholesky_root_list = []
 
@@ -53,12 +69,12 @@ def generate_cholesky_roots_matrices(GF, matrix_list):
 
 def generate_square_root_matrices(GF, matrix_list):
     """
-    DESC:
-    given a list of matrices, find the square roots
-    A matrix is a square root if a matrix M's (M * M) == zero matrix 
-    PARAMS
-    GF(int)
-    matrix_list(list of np matrices)
+    DESC:                                                                            \n
+    given a list of matrices, find the square roots                                  \n
+    A matrix is a square root if a matrix M's (M * M) == zero matrix                 \n
+    PARAMS                                                                           \n
+    GF(int)                                                                          \n
+    matrix_list(list of np matrices)                                                 \n
     """
     square_root_list = []       
 
@@ -95,7 +111,7 @@ def recurr_create_matrix_permutations(flat_matrix, GF, index):
     DESC:                                                                           \n
     generate all possible matrix permutations given a flatend matrix with know and
     to be determined values                                                         \n
-    PARAMS:
+    PARAMS:             
     flat_matrix: general matrix that has been flattened                             \n
     GF:          The field which our general matrix is allowed to span              \n
     index:       The current index that is being split on currently                 \n
@@ -132,11 +148,24 @@ def recurr_create_matrix_permutations(flat_matrix, GF, index):
                     output_perm_list.append(np_arr)
         return output_perm_list
     
+def sqrt_matrix_to_chol(sqrt_matrix):
+    result_matrix = copy.deepcopy(sqrt_matrix)
+
+    for i, row in enumerate(sqrt_matrix):
+        for j, col in enumerate(row):
+            if col == 1:
+                result_matrix[i + 1][j] += 1
+                result_matrix = mod_to_finite_field(2, result_matrix)
+    
+    return result_matrix
+
+def chol_matrix_to_sqrt():
+    pass
 
 def mod_to_finite_field(GF, matrix):
-        """
-        this function will be called after every operation to make sure 
-        the output stays within the defined GF
+        """                                                                       
+        this function will be called after every operation to make sure         \n
+        the output stays within the defined GF                                  \n
         """
         rows, cols = matrix.shape
         result = np.zeros(matrix.shape, dtype="int16")
@@ -146,8 +175,6 @@ def mod_to_finite_field(GF, matrix):
 
         return result
 
-def rule():
-    pass
 
 def pretty_print_numpy_array(np_array, array_label = "", with_index_labels = True, with_shape = True):
     """

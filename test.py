@@ -159,7 +159,3 @@ def compare_test_and_result_lists_utility(result_list, test_list):
     for root in result_list:
         assert any(np.array_equal(test, root) for test in test_list)
 
-
-
-def test_rule_upto_n():
-    pass
