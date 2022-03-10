@@ -3,8 +3,8 @@ import numpy as np
 import utils
 
 
-# placeholder for an undetermined value
-und = -1
+# placeholder for an undetermined valu
+UNDEFINED = -1
 
 
 def main(output_location, GF, n):
@@ -15,8 +15,8 @@ def main(output_location, GF, n):
 
     general_upper_matrix = utils.generate_upper_triangular_matrix_of_nxn(n)
     upper_triangular_list = find_matrix_list_from_gen(GF, general_upper_matrix)
-    sqrt_list_at_n = generate_square_root_matrices(GF, upper_triangular_list)
-    chol_list_at_n = generate_cholesky_roots_matrices(GF, upper_triangular_list)
+    sqrt_list_at_n = generate_type_matrices(GF, utils.is_sqrt_matrix, upper_triangular_list)
+    chol_list_at_n = generate_type_matrices(GF, utils.is_chol_matrix, upper_triangular_list)
 
     print("sqrt list")
     for matrix in sqrt_list_at_n:
@@ -27,7 +27,7 @@ def main(output_location, GF, n):
         utils.pretty_print_numpy_array(matrix, with_index_labels=False, with_shape=False)
 
 
-def generate_type_matrices(type_function, GF, matrix_list):
+def generate_sqrt_matrices(GF, matrix_list):
     """
     DESC:                                                                            \n
     given a list of matrices, find the ones that obey the type function              \n
@@ -41,7 +41,27 @@ def generate_type_matrices(type_function, GF, matrix_list):
     type_matrix_list = []       
 
     for M in matrix_list:
-        if type_function(GF, M):
+        if utils.is_sqrt_matrix(GF, M):
+            # the matrix will be classified as a sqrt matrix
+            type_matrix_list.append(M)
+
+    return type_matrix_list
+
+def generate_chol_matrices(GF, matrix_list):
+    """
+    DESC:                                                                            \n
+    given a list of matrices, find the ones that obey the type function              \n
+    A matrix is a square root if a matrix M's (M * M) == zero matrix                 \n
+    PARAMS                                                                           \n
+    GF(int)                                                                          \n
+    matrix_list(list of np matrices)                                                 \n
+    INFO
+    this can generate both chols and sqrts, just pass in the utils helper function to sort them out
+    """
+    type_matrix_list = []       
+
+    for M in matrix_list:
+        if utils.is_chol_matrix(GF, M):
             # the matrix will be classified as a sqrt matrix
             type_matrix_list.append(M)
 

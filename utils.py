@@ -1,6 +1,6 @@
 import numpy as np
 
-import simpleCholSqrtGenerator
+UNDEFINED = -1
 
 def generate_upper_triangular_matrix_of_nxn(n):
     """
@@ -10,13 +10,12 @@ def generate_upper_triangular_matrix_of_nxn(n):
     PARAMS                                                                                \n
     n(int): specifies the length of the square matrix being generated                     \n
     """
-    und  = -1
     upper_tri_matrix = np.zeros((n, n), dtype="int16")
 
     for i in range(n):
         for j in range(n):
             if i <= j:
-                upper_tri_matrix[i][j] = und
+                upper_tri_matrix[i][j] = UNDEFINED
     return upper_tri_matrix
 
 def contains_np_matrix(search_matrix, matrix_list):
