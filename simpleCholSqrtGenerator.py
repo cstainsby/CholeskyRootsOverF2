@@ -15,8 +15,8 @@ def main(output_location, GF, n):
 
     general_upper_matrix = utils.generate_upper_triangular_matrix_of_nxn(n)
     upper_triangular_list = find_matrix_list_from_gen(GF, general_upper_matrix)
-    sqrt_list_at_n = generate_type_matrices(GF, utils.is_sqrt_matrix, upper_triangular_list)
-    chol_list_at_n = generate_type_matrices(GF, utils.is_chol_matrix, upper_triangular_list)
+    sqrt_list_at_n = generate_sqrt_matrices(GF, upper_triangular_list)
+    chol_list_at_n = generate_chol_matrices(GF, upper_triangular_list)
 
     print("sqrt list")
     for matrix in sqrt_list_at_n:
