@@ -1,8 +1,10 @@
 import numpy as np
+from copy import deepcopy
 
 import utils
 
 UNDEFINED = -1
+
 
 class Node:
     # np array of the current node 
@@ -17,8 +19,8 @@ class Node:
     children = []
 
 def main():
-    n = 2
-    generate_tree(2, 2)
+    n = 3
+    generate_tree(2, n)
 
 
 def generate_tree(GF, n):
@@ -40,15 +42,15 @@ def generate_tree(GF, n):
 
 def generate_tree_recurr(GF, n, curr_node, curr_depth):
     col, row = depth_to_matrix_index_in_UT_terms(curr_depth)
-    print()
-    print("curr_depth: " + str(curr_depth))
-    print("col: " + str(col) + " row: " + str(row))
 
     # base check
-    # make sure tree generation stays within num undefined matrix positions 
-    print("base check: col: " + str(col) + " n: " + str(n))
+    # make sure tree generation stays within num undefined matrix positions
     if col >= n:
-        return None
+        if utils.is_chol_matrix(GF, curr_node.current_arr):
+            curr_node.children = [None] * GF # must return a list of Nones for each potential child the node could have had given it was internal
+            return curr_node
+        else:
+            return None
 
     curr_node.children = []
     curr_node.operations = []
@@ -58,48 +60,67 @@ def generate_tree_recurr(GF, n, curr_node, curr_depth):
         # proposed child node
         # the recurrsive function will determine if it is valid, if so it will append it
         proposed_child = Node()
-        proposed_child.current_arr = curr_node.current_arr
+        proposed_child.current_arr = deepcopy(curr_node.current_arr)
         proposed_child.current_arr[row][col] = i
 
         # the recurrsive function may return 
-        returned_child = generate_tree_recurr(GF, n, proposed_child, curr_depth + 1)
-        curr_node.children.append(returned_child)
-        # curr_node.operations.append(((row,col), i))
+        curr_node.children.append(generate_tree_recurr(GF, n, proposed_child, curr_depth + 1))
+        curr_node.operations.append(((row, col), i))
 
-    if returned_child is not None:
-        if curr_node.children.count(None) == 0:
-            # case 1: leaf node case
-            # either originally a leaf node or an internal node that is now a leaf
-            if utils.is_chol_matrix(GF, curr_node.current_arr):
-                return curr_node
-            else:
-                return None
-        elif curr_node.children.count(None) == 1:
-            # if there is only one child, copy its contents into the current node
-            curr_node.current_arr = returned_child.current_arr
-            return curr_node
-        else:
-            # there are multiple children
-            # 
-            return curr_node
-    else:
+    children_list_size = len(curr_node.children)
+    num_non_none_children = children_list_size - curr_node.children.count(None)
+
+    # remove the operation that leads to each of the None children
+    print("len child")
+    print(len(curr_node.children))
+    print("len ops")
+    print(len(curr_node.operations))
+    for i in range(len(curr_node.children) - 1, 0, -1):
+        if curr_node.children[i] is None:
+            curr_node.operations.pop(i)
+
+    # backtrack checks for intermediate nodes to reduce tree to only paths that fit the chol/sqrt parameter
+    if num_non_none_children == 0:
+        # case 1: No valid children
+        #   return None
         return None
+    elif num_non_none_children == 1:
+        # case 2: single child
+        #   copy child contents into current node
+
+        # find non-None child
+        non_none_child_index = 0
+        while curr_node.children[non_none_child_index] is None:
+            non_none_child_index += 1
+
+        # for operation in curr_node.children[non_none_child_index].operations:
+        #     curr_node.operations.append(operation)
+        
+        curr_node.current_arr = deepcopy(curr_node.children[non_none_child_index].current_arr)
+        curr_node.children = deepcopy(curr_node.children[non_none_child_index].children)
+
+        return curr_node
+    # case 3: Multiple non-None children
+    #   do nothing
+    return curr_node
 
 
 def pretty_print_tree(root):
     print()
-    print("Printing tree ------------------")
+    print("-----------------------------------------")
+    print("     Printing tree ")
+    print("-----------------------------------------")
     pretty_print_tree_recurr(root, 0)
 
 def pretty_print_tree_recurr(curr_node, depth):
-    print("print depth: " + str(depth))
     if curr_node is None:
         return
     
-    print("depth: " + str(depth))
+    print("Depth: " + str(depth))
     print("operations:")
     for operation in curr_node.operations:
-        print(operation)
+        # each operation in form -> ((row, col), value)
+        print(row_and_col_to_ascii_char(operation[0][0], operation[0][1]) + " set to " + str(operation[1]))
     
     utils.pretty_print_numpy_array(curr_node.current_arr)
 
@@ -118,6 +139,13 @@ def depth_to_matrix_index_in_UT_terms(curr_depth):
         col += 1
 
     return col, row
+
+def row_and_col_to_ascii_char(row, col):
+    col_total = 0
+    for i in range(col):
+        col_total += i + 1
+
+    return chr(row + col_total + 65)
 
 if __name__ == "__main__":
     print("Starting treeCholSqrtGenerator main()")
