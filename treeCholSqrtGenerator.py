@@ -7,6 +7,18 @@ UNDEFINED = -1
 
 
 class Node:
+    """ 
+    DESC:
+        A Node in a tree used for generating paths from a generic upper-triangular matrix to each allowable matrix given a rule
+
+    ATTRIBUTES:
+        - current_arr(list of list of int): the matrix bound to the current Node
+        - operations(tuple of tuple and int): parallel to children, operations used to get to each child
+        - children(list of Nodes): parallel to operations, list of all Nodes reachable from the current Node
+
+    METHODS: 
+        None
+    """
     # np array of the current node 
     current_arr = None
 
@@ -18,29 +30,67 @@ class Node:
     # num children will scale 1:1 with GF
     children = []
 
+class UT_Matrix_Tree():
+    """
+    DESC:
+        An upper triangular matrix tree which is able to
+
+    ATTRIBUTES:
+        - current_arr(list of list of int): the matrix bound to the current Node
+        - operations(tuple of tuple and int): parallel to children, operations used to get to each child
+        - children(list of Nodes): parallel to operations, list of all Nodes reachable from the current Node
+
+    METHODS: 
+        None
+    """
+
 def main():
-    n = 3
-    generate_tree(2, n)
+    n = 2
+    DFS_generate_tree(2, n)
 
 
-def generate_tree(GF, n):
-    # max depth of the tree will be the sum of 1, ..., n
-    max_depth = 1
-    for i in range(0, n):
-        max_depth += i
+def DFS_generate_tree(GF, n):
+    """
+    DESC: 
+        Initial call for the DFS generation of the matrix tree.
+        The root node will always start as a generic upper triangular matrix
 
+    PARAMS:
+        - GF(int): feild the matrix will be over
+        - n(int): the side length of the square matrix
+
+    RETURN:
+        - root(Node): The root node of the tree
+    """
     general_upper_matrix = utils.generate_upper_triangular_matrix_of_nxn(n)
     root = Node()
 
     root.current_arr = np.array(general_upper_matrix)
-
-    root = generate_tree_recurr(GF, n, root, 0)
+    root = DFS_generate_tree_recurr(GF, n, root, 0)
 
     pretty_print_tree(root)
 
     return root
 
-def generate_tree_recurr(GF, n, curr_node, curr_depth):
+def DFS_generate_tree_recurr(GF, n, curr_node, curr_depth):
+    """
+    DESC: 
+        DFS recurrsive function used to generate the tree
+        It will start by recurrsivly generating every possible child regardless of the chol/sqrt restriction in DFS 
+        fashion until a leaf node is reached. At which point it will be caught by a base check to confirm that it is a leaf 
+        node and assign it a list of children which are None. When backtracking, a series of checks based on the number of 
+        None children will be made to determine if the tree can be condensed. 
+
+    PARAMS:
+        - GF(int): feild the matrix will be over
+        - n(int): the side length of the square matrix
+        - curr_node(Node): the current Node being operated on
+        - curr_depth(int): the current depth of the curr_node
+
+    RETURN:
+        curr_node if the node should be in the final tree based off chol/sqrt specifications
+        None otherwise
+    """
     col, row = depth_to_matrix_index_in_UT_terms(curr_depth)
 
     # base check
@@ -64,7 +114,7 @@ def generate_tree_recurr(GF, n, curr_node, curr_depth):
         proposed_child.current_arr[row][col] = i
 
         # the recurrsive function may return 
-        curr_node.children.append(generate_tree_recurr(GF, n, proposed_child, curr_depth + 1))
+        curr_node.children.append(DFS_generate_tree_recurr(GF, n, proposed_child, curr_depth + 1))
         curr_node.operations.append(((row, col), i))
 
     children_list_size = len(curr_node.children)
@@ -106,6 +156,16 @@ def generate_tree_recurr(GF, n, curr_node, curr_depth):
 
 
 def pretty_print_tree(root):
+    """
+    DESC: 
+        Initial call for the DFS printing of the matrix tree.
+
+    PARAMS:
+        - root(Node): the root node of the tree
+
+    RETURN:
+        N/A
+    """
     print()
     print("-----------------------------------------")
     print("     Printing tree ")
@@ -113,6 +173,17 @@ def pretty_print_tree(root):
     pretty_print_tree_recurr(root, 0)
 
 def pretty_print_tree_recurr(curr_node, depth):
+    """
+    DESC: 
+        Recurrsive DFS function for printing the tree
+
+    PARAMS:
+        - curr_node(Node): the current node in the tree 
+        - depth(int): the current depth in the tree
+
+    RETURN:
+        N/A
+    """
     if curr_node is None:
         return
     
@@ -129,6 +200,18 @@ def pretty_print_tree_recurr(curr_node, depth):
 
 
 def depth_to_matrix_index_in_UT_terms(curr_depth):
+    """
+    DESC: 
+        Converts depth into a 2d matrix position to find index based on current depth
+        Specifically limited to upper triangular postions
+
+    PARAMS:
+        - curr_depth(int): the current depth
+
+    RETURN:
+        - col(int): column
+        - row(int): row
+    """
     # we will be itterating through the matrix starting at the top left, going col first
     #   [[a, b, d], [0, c, e], [0, 0, f]]    (in alphabetical order)
     # 
@@ -141,6 +224,22 @@ def depth_to_matrix_index_in_UT_terms(curr_depth):
     return col, row
 
 def row_and_col_to_ascii_char(row, col):
+    """
+    DESC: 
+        Used for operation generation
+        based on row and column of the upper triangular matrix, generate the equivalent letter position
+        e.g. n = 3 
+        [[A, B, D],
+         [0, C, E],
+         [0, 0, F]]
+
+    PARAMS:
+        - row(int): row
+        - col(int): col
+
+    RETURN:
+        - letter(char): A-Z
+    """
     col_total = 0
     for i in range(col):
         col_total += i + 1
