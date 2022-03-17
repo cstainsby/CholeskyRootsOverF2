@@ -12,17 +12,11 @@ To Install you need
 - Git ([instructions](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git))
 - python ([download here](https://www.python.org/downloads/))
 
-running "git --version" or "python --version" will let you know if it has downloaded properly
-
 Python Libraries
 - Required for running base program
     - numpy
 - Required for running tests(optional)
     - pytest
-
-using pip, python's package installer, is an easy way to download them
-pip should have come with your python download
-e.g. run "pip install numpy" to get numpy
 
 
 ## About The Project
