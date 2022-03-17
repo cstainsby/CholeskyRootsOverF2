@@ -171,6 +171,7 @@ def test_three_by_three_sqrt():
     compare_test_and_result_lists_utility(result_list=sqrt_list, test_list=test_list)
 
 def compare_test_and_result_lists_utility(result_list, test_list):
+    """Checks to see if result_list and test_list are equal"""
     assert len(result_list) == len(test_list)
 
     # test shape of each array in chol list

@@ -1,5 +1,6 @@
 import numpy as np
 from copy import deepcopy
+import sys
 
 import utils
 
@@ -33,24 +34,29 @@ class Node:
 class UT_Matrix_Tree():
     """
     DESC:
-        An upper triangular matrix tree which is able to
+        An upper triangular matrix tree 
 
     ATTRIBUTES:
-        - current_arr(list of list of int): the matrix bound to the current Node
-        - operations(tuple of tuple and int): parallel to children, operations used to get to each child
-        - children(list of Nodes): parallel to operations, list of all Nodes reachable from the current Node
+        - GF(int)
+        - n(int)
+        - root(Node): root of the tree
+        - definition_function(func): function used to shape tree(sqrt/chol)
 
     METHODS: 
         None
     """
     root = None
 
-    def __init__(self, GF = 0, n = 0) -> None:
+    def __init__(self, definition_function, GF = 0, n = 0) -> None:
+        """Constructor"""
         self.GF = GF
         self.n = n
+        self.definition_function = definition_function
 
         self.DFS_generate_tree()
-
+    # ---------------------------------------------------------------------------------
+    #       construction helper functions
+    # ---------------------------------------------------------------------------------
     def DFS_generate_tree(self):
         """
         DESC: 
@@ -66,7 +72,7 @@ class UT_Matrix_Tree():
         general_upper_matrix = utils.generate_upper_triangular_matrix_of_nxn(self.n)
         self.root = Node()
 
-        self.root.current_arr = np.array(general_upper_matrix)
+        self.root.current_arr = np.array(general_upper_matrix, dtype="int16")
         self.root = self.DFS_generate_tree_recurr(self.root, 0)
 
     def DFS_generate_tree_recurr(self, curr_node, curr_depth):
@@ -93,7 +99,7 @@ class UT_Matrix_Tree():
         # base check
         # make sure tree generation stays within num undefined matrix positions
         if col >= self.n:
-            if utils.is_chol_matrix(self.GF, curr_node.current_arr):
+            if self.definition_function(self.GF, curr_node.current_arr):
                 curr_node.children = [None] * self.GF # must return a list of Nones for each potential child the node could have had given it was internal
                 return curr_node
             else:
@@ -118,10 +124,6 @@ class UT_Matrix_Tree():
         num_non_none_children = children_list_size - curr_node.children.count(None)
 
         # remove the operation that leads to each of the None children
-        print("len child")
-        print(len(curr_node.children))
-        print("len ops")
-        print(len(curr_node.operations))
         for i in range(len(curr_node.children) - 1, 0, -1):
             if curr_node.children[i] is None:
                 curr_node.operations.pop(i)
@@ -151,8 +153,10 @@ class UT_Matrix_Tree():
         #   do nothing
         return curr_node
 
-
-    def pretty_print_tree(self):
+    # ---------------------------------------------------------------------------------
+    #       Tree utility functions
+    # ---------------------------------------------------------------------------------
+    def pretty_print_tree(self, with_children=True):
         """
         DESC: 
             Initial call for the DFS printing of the matrix tree.
@@ -167,9 +171,9 @@ class UT_Matrix_Tree():
         print("-----------------------------------------")
         print("     Printing tree ")
         print("-----------------------------------------")
-        self.pretty_print_tree_recurr(self.root, 0)
+        self.pretty_print_tree_recurr(self.root, 0, with_children)
 
-    def pretty_print_tree_recurr(self, curr_node, depth):
+    def pretty_print_tree_recurr(self, curr_node, depth, with_children):
         """
         DESC: 
             Recurrsive DFS function for printing the tree
@@ -185,17 +189,32 @@ class UT_Matrix_Tree():
             return
         
         print("Depth: " + str(depth))
-        print("operations:")
-        for operation in curr_node.operations:
-            # each operation in form -> ((row, col), value)
-            print(self.row_and_col_to_ascii_char(operation[0][0], operation[0][1]) + " set to " + str(operation[1]))
+        if depth == 0:
+            print("ROOT")
+        # print("operations:")
+        # for operation in curr_node.operations:
+        #     # each operation in form -> ((row, col), value)
+        #     print(self.row_and_col_to_ascii_char(operation[0][0], operation[0][1]) + " set to " + str(operation[1]))
         
-        utils.pretty_print_numpy_array(curr_node.current_arr)
+        utils.pretty_print_numpy_array(curr_node.current_arr, array_label="current matrix", with_index_labels=True, with_shape=True)
+
+        if with_children:
+            print("number of children: " + str(len(curr_node.children) - curr_node.children.count(None)))
+            for i, child_matrix in enumerate(curr_node.children):
+                # print children
+                if child_matrix is None:
+                    utils.pretty_print_numpy_array(None, array_label="child " + str(i), indent=4)
+                else:
+                    utils.pretty_print_numpy_array(child_matrix.current_arr, array_label="child " + str(i), indent=4)
 
         for child_node in curr_node.children:
-            self.pretty_print_tree_recurr(child_node, depth + 1)
+            self.pretty_print_tree_recurr(child_node, depth + 1, with_children)
 
 
+
+    # ---------------------------------------------------------------------------------
+    #     Helper functions 
+    # ---------------------------------------------------------------------------------
     def depth_to_matrix_index_in_UT_terms(self, curr_depth):
         """
         DESC: 
@@ -243,14 +262,42 @@ class UT_Matrix_Tree():
 
         return chr(row + col_total + 65)
 
-
     
 
 def main():
-    n = 2
-    GF = 2
-    tree = UT_Matrix_Tree(GF, n)
-    tree.pretty_print_tree()
+    """Driver for program
+    Command to run: python treeCholSqrtGenerator.py runtype GF n
+    runtype = either "chol" or "sqrt"
+    GF = any integer >= 0
+    n = any integer >= 0"""
+    runtype = sys.argv[1]
+    GF = int(sys.argv[2])
+    n = int(sys.argv[3])
+    
+    print("you entered \nruntype: " + runtype + "\nGF: " + str(GF) + "\nn: " + str(n))
+
+    if len(sys.argv) != 4:
+        print("error, incorrect amount of inputs")
+        return
+    if type(GF) is not int or GF < 0:
+        print("error, GF is wrong")
+        return
+    if type(n) is not int or n < 0:
+        print("error, n is wrong")
+        return
+    
+
+    if runtype == "chol":
+        tree = UT_Matrix_Tree(definition_function=utils.is_chol_matrix, GF=GF, n=n)
+    elif runtype == "sqrt":
+        tree = UT_Matrix_Tree(definition_function=utils.is_sqrt_matrix, GF=GF, n=n)
+    else:
+        print("error, unreadable runtype")
+        return
+    
+    tree.DFS_generate_tree()
+    tree.pretty_print_tree(with_children=True)
+
 
 
 

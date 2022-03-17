@@ -12,20 +12,24 @@ def main(output_location, GF, n):
     DESC:
     driver for program
     """
+    pass
 
+def generate_list_of_type_matrices(GF, n, type):
     general_upper_matrix = utils.generate_upper_triangular_matrix_of_nxn(n)
     upper_triangular_list = find_matrix_list_from_gen(GF, general_upper_matrix)
-    sqrt_list_at_n = generate_sqrt_matrices(GF, upper_triangular_list)
-    chol_list_at_n = generate_chol_matrices(GF, upper_triangular_list)
 
-    print("sqrt list")
-    for matrix in sqrt_list_at_n:
-        utils.pretty_print_numpy_array(matrix, with_index_labels=False, with_shape=False)
-
-    print("\nchol list")
-    for matrix in chol_list_at_n:
-        utils.pretty_print_numpy_array(matrix, with_index_labels=False, with_shape=False)
-
+    if type == "sqrt":
+        sqrt_list_at_n = generate_sqrt_matrices(GF, upper_triangular_list)
+        print("sqrt list")
+        for matrix in sqrt_list_at_n:
+            utils.pretty_print_numpy_array(matrix, with_index_labels=False, with_shape=False)
+    elif type == "chol":
+        chol_list_at_n = generate_chol_matrices(GF, upper_triangular_list)
+        print("\nchol list")
+        for matrix in chol_list_at_n:
+            utils.pretty_print_numpy_array(matrix, with_index_labels=False, with_shape=False)
+    else:
+        return
 
 def generate_sqrt_matrices(GF, matrix_list):
     """

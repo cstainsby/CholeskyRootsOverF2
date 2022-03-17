@@ -55,7 +55,7 @@ def mod_to_finite_field(GF, matrix):
         return result
 
 
-def pretty_print_numpy_array(np_array, array_label = "", with_index_labels = True, with_shape = True):
+def pretty_print_numpy_array(np_array, array_label = "", with_index_labels = False, with_shape = False, indent=0):
     """
     DESC:                                                                           \n
     creates a detailed print of a numpy array including its shape and a given title \n
@@ -65,44 +65,57 @@ def pretty_print_numpy_array(np_array, array_label = "", with_index_labels = Tru
     with_index_labels(boolean): choose whether you want your axis labeled           \n
     with_shape(boolean):        choose whether you want the shape displayed         \n
     """
-    rows, cols = np_array.shape
+    indent_str = " " * indent
 
     if array_label != "":
-        print("<----" + array_label + "---->")
+        print(indent_str + "<----" + array_label + "---->")
     else:
-        print("<--------->")
-    
-    if with_shape:
-        print("Rows: " + str(rows))
-        print("Cols: " + str(cols))
+        print(indent_str + "<--------->")
 
-    if with_index_labels:
-        print("  ", end="")
-        for i in range(cols):
-            print("|" + str(i) + " ", end="")
+    if np_array is None:
+        # output None message and return early
+        print(indent_str + " NULL")
+        if array_label != "":
+            print(indent_str + "<----" + ('-' * len(array_label))  + "---->")
+        else:
+            print(indent_str + "<--------->")
         print()
+    else:
+        rows, cols = np_array.shape
+        if with_shape:
+            print("Rows: " + str(rows))
+            print("Cols: " + str(cols))
 
-    for n in range((3 * cols) + 3):
-        print("-", end="")
-    print()
-
-    for i, row in enumerate(np_array):
         if with_index_labels:
-            print(str(i) + " ", end="")
+            print(indent_str + "  ", end="")
+            for i in range(cols):
+                print("|" + str(i) + " ", end="")
+            print()
 
-        for j, value in enumerate(row):
-            if value == -1:
-                print("|und", end="")
-            else:
-                print("|" + str(value) + " ", end="")
-
-        print("")
+        print(indent_str, end="")
         for n in range((3 * cols) + 3):
             print("-", end="")
         print()
 
-    if array_label != "":
-        print("<----" + ('-' * len(array_label))  + "---->")
-    else:
-        print("<--------->")
-    print()
+        for i, row in enumerate(np_array):
+            if with_index_labels:
+                print(indent_str + str(i) + " ", end="")
+
+            print(indent_str, end="")
+            for j, value in enumerate(row):
+                if value == -1:
+                    print("|und", end="")
+                else:
+                    print("|" + str(value) + " ", end="")
+
+            print()
+            print(indent_str, end="")
+            for n in range((3 * cols) + 3):
+                print("-", end="")
+            print()
+
+        if array_label != "":
+            print(indent_str + "<----" + ('-' * len(array_label))  + "---->")
+        else:
+            print(indent_str + "<--------->")
+        print()
