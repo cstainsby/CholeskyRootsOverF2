@@ -2,6 +2,7 @@ import sys
 
 import simpleCholSqrtGenerator
 import treeCholSqrtGenerator
+import utils
 
 def main():
     """
@@ -12,9 +13,10 @@ def main():
 
     Flags: Specify how you want your tree to be output
         by default full tree including children are included in output
-        NOTE: you can use multiple flags in a run
-        - --with_children : only outputs the tree 
-        - --leaves : only prints the leaf nodes of the tree(valid matrices)
+        NOTE: you can use multiple flags 
+        - --tree : run to get tree
+            - --with_children : only outputs the tree 
+        - --list : run to get list of leaf nodes
 
     Runtype
         runtype must be specified or error
@@ -22,40 +24,52 @@ def main():
         - sqrt : creates a sqrt tree 
     
     example run: 
-    python treeCholSqrtGenerator.py --no_children --leaves chol
-    This would print all cholesky leaf nodes with no children
+    python main.py chol 2 2 --list
+    This would print a list of all cholesky leaf nodes over F=2 with size of n=2
+
+    python main.py sqrt 2 3 --tree --with_children
+    This would print a tree with matrices of F=2 and size of n = 3 that include each nodes children
+
     """
     flags = [arg for arg in sys.argv[3:] if arg.startswith("--")]
     runtype = sys.argv[1]
-    GF = sys.argv[2]
-    n = sys.argv[3]
+    GF = int(sys.argv[2])
+    n = int(sys.argv[3])
 
-    tree = treeCholSqrtGenerator.UT_Matrix_Tree(GF, n)
-    if flags.count("--leaves"):
+    print("You entered \nruntype: " + runtype + "\nGF: " + str(GF) + "\nn: " + str(n))
+    print("With flags:")
+    for flag in flags:
+        print("    " + flag)
+
+    # check for invalid use of flags
+    if flags.count("--list") and flags.count("--tree"):
+        print("Error, cannot run both list and tree")
+        return
+    if(flags.count("--list") and flags.count("--with_children")):
+        print("Error, cannot run --list and --with_children")
+        return
+
+    if flags.count("--list"):
         #TODO: make this a tree leaf function 
         if runtype == "chol":
-            simpleCholSqrtGenerator.generate_list_of_type_matrices(GF, n, "chol")
+            simpleCholSqrtGenerator.generate_list_of_type_matrices("chol", GF, n)
         elif runtype == "sqrt":
-            simpleCholSqrtGenerator.generate_list_of_type_matrices(GF, n, "sqrt")
-    else:
-        tree = treeCholSqrtGenerator.UT_Matrix_Tree(GF, n)
-        tree.DFS_generate_tree()
+            simpleCholSqrtGenerator.generate_list_of_type_matrices("sqrt", GF, n)
+    elif flags.count("--tree"):
+        if runtype == "chol":
+            tree = treeCholSqrtGenerator.UT_Matrix_Tree(utils.is_chol_matrix, GF, n)
+            tree.DFS_generate_tree()
+        elif runtype == "sqrt":
+            tree = treeCholSqrtGenerator.UT_Matrix_Tree(utils.is_sqrt_matrix, GF, n)
+            tree.DFS_generate_tree()
 
         if flags.count("--with_children"):
+            print("printing with child")
             tree.pretty_print_tree(with_children=True)
         else:
+            print("printing w/o child")
             tree.pretty_print_tree(with_children=False)
 
-    if len(sys.argv) < 2:
-        print("incorrect ammount of arguments entered")
-    else:
-        # parse through the args
-        for arg_index in range(len(sys.argv) - 1):
-            remaining_args = len(sys.argv) - arg_index
-
-            if remaining_args > 2:
-                # then we have flags that have been entered
-                pass
-            else:
-                # then we only have GF and n to read in
-                pass
+if __name__ == "__main__":
+    print("Starting main")
+    main()

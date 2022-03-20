@@ -7,7 +7,7 @@ import utils
 # placeholder for an undetermined valu
 UNDEFINED = -1
 
-def generate_list_of_type_matrices(GF, n, type):
+def generate_list_of_type_matrices(type, GF, n):
     """
     DESC:                                                                            
     generate a list of matrices which conform to runtype set, GF, and n       
@@ -15,7 +15,7 @@ def generate_list_of_type_matrices(GF, n, type):
     PARAMS                                                                           
     GF(int)                                                                          
     matrix_list(list of np matrices)
-    
+    type(string): sqrt or chol
     """
     general_upper_matrix = utils.generate_upper_triangular_matrix_of_nxn(n)
     upper_triangular_list = find_matrix_list_from_gen(GF, general_upper_matrix)
