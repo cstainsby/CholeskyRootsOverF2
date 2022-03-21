@@ -1,11 +1,9 @@
 # Cholesky Roots And Sqrts Of Upper Triangular Matrices Over F2
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Undergrad Reasearch Spring 2022
 ## How To Run
-To generate a tree run
-"python treeCholSqrtGenerator.py runtype GF n"
-- runtype = either "chol" or "sqrt"
-- GF = any integer >= 0
-- n = any integer >= 0
+Run through the main.py file
+To run use: python main.py "runtype" "GF" "n" "--flags"
+For more details about this command look at main.py's def main function header
 
 ### Software Required
 To Install you need 
