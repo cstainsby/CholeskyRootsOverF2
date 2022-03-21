@@ -100,6 +100,12 @@ def main():
         else:
             print("printing w/o child")
             tree.pretty_print_tree(with_children=False)
+    else:
+        # default to list
+        if runtype == "chol":
+            simpleCholSqrtGenerator.generate_list_of_type_matrices("chol", GF, n)
+        elif runtype == "sqrt":
+            simpleCholSqrtGenerator.generate_list_of_type_matrices("sqrt", GF, n)
 
 if __name__ == "__main__":
     print("Starting main")

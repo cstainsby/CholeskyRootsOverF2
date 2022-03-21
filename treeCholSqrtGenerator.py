@@ -142,15 +142,33 @@ class UT_Matrix_Tree():
             while curr_node.children[non_none_child_index] is None:
                 non_none_child_index += 1
 
-            # for operation in curr_node.children[non_none_child_index].operations:
-            #     curr_node.operations.append(operation)
-            
             curr_node.current_arr = deepcopy(curr_node.children[non_none_child_index].current_arr)
             curr_node.children = deepcopy(curr_node.children[non_none_child_index].children)
 
             return curr_node
         # case 3: Multiple non-None children
-        #   do nothing
+        #   if all children have a matching feature that is non accounted for in the generic internal node, 
+        #   change the und value to account for it. This would make sense in the case for SQRT n=2 GF=2 where
+        #   because []
+        flattened_curr_node = curr_node.current_arr.flatten()
+        flattened_child_list = []
+        for child in curr_node.children:
+            if child is not None:
+                flattened_child_list.append(child.current_arr.flatten())
+        for i, curr_node_value in enumerate(flattened_curr_node):
+            if curr_node_value == UNDEFINED:
+                # then check each child to see if they all have matching values at i
+                # if they do replace currnode's und value with children matching value
+                first_child_value_at_i = flattened_child_list[0][i]
+                non_match_found = False
+                for flat_child in flattened_child_list:
+                    if flat_child[i] != first_child_value_at_i:
+                        non_match_found = True
+                if not non_match_found:      
+                    # if no non-matches were found, update curr_node val
+                    flattened_curr_node[i] = first_child_value_at_i
+        curr_node.current_arr = deepcopy(np.reshape(flattened_curr_node, curr_node.current_arr.shape))
+        
         return curr_node
 
     # ---------------------------------------------------------------------------------
