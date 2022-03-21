@@ -4,11 +4,13 @@ UNDEFINED = -1
 
 def generate_upper_triangular_matrix_of_nxn(n):
     """
-    DESC:                                                                                 \n
-    create an upper triangular matrix with the upper triangle values as undetermined(-1)  \n
-    this matrix can form any upper triangular matrix                                      \n
-    PARAMS                                                                                \n
-    n(int): specifies the length of the square matrix being generated                     \n
+    DESC:                                                                                 
+    create an upper triangular matrix with the upper triangle values as undetermined(-1)  
+    this matrix can form any upper triangular matrix                                      
+
+    PARAMS                                                                                
+    n(int): specifies the length of the square matrix being generated                     
+    
     """
     upper_tri_matrix = np.zeros((n, n), dtype="int16")
 
@@ -19,6 +21,7 @@ def generate_upper_triangular_matrix_of_nxn(n):
     return upper_tri_matrix
 
 def contains_np_matrix(search_matrix, matrix_list):
+    """search function for a matrix in list of matrices"""
     index_of_matrix_in_list  = None # will remain None until the matrix is found, return None otherwise
 
     for i, matrix in enumerate(matrix_list):
@@ -35,10 +38,12 @@ def pretty_print_list_of_matrices(list_of_matrices):
 
 
 def is_sqrt_matrix(GF, M):
+    """Utility func for checking if a matrix is a sqrt"""
     return np.array_equal(mod_to_finite_field(GF, np.matmul(M, M)), np.zeros(M.shape, dtype="int16"))
 
 
 def is_chol_matrix(GF, M):
+    """Utility func for checking if a matrix is a chol"""
     return np.array_equal(mod_to_finite_field(GF, np.transpose(M).dot(M)), np.zeros(M.shape, dtype="int16"))
 
 def mod_to_finite_field(GF, matrix):
