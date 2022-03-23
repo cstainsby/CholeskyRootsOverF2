@@ -45,3 +45,11 @@ def chol_sqrt_binom_size_growth(q, n):
 
             sum += (math.comb(top, bottom) - math.comb(top, bottom - 1)) * last_expr
     return int(sum)
+
+if __name__ == "__main__":
+    # manual run here
+    GF = 2
+    n = 2
+
+    num_matrices = chol_sqrt_binom_size_growth(GF, n)
+    print(num_matrices)
